@@ -12,6 +12,7 @@ import { Repository } from "typeorm";
 import { AccountService } from "../accounts/account.service";
 import { AssignAccountDto } from "../accounts/dto";
 import { CreateManagerDto, EditManagerDto } from "./dto";
+import { HttpErr } from "../common/error";
 
 @Injectable()
 export class ManagerService {
@@ -26,8 +27,7 @@ export class ManagerService {
     try {
       return await this.managerRepo.find();
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -43,8 +43,7 @@ export class ManagerService {
         },
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -56,8 +55,7 @@ export class ManagerService {
         note: createmanagerDto.note || "",
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -86,12 +84,7 @@ export class ManagerService {
       } catch (err: any) {
         Logger.log(err.message);
       }
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 
@@ -106,12 +99,7 @@ export class ManagerService {
         ...editManagerDto,
       });
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 }

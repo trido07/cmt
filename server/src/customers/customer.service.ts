@@ -12,6 +12,8 @@ import { Repository } from "typeorm";
 import { AccountService } from "../accounts/account.service";
 import { AssignAccountDto } from "../accounts/dto";
 import { CreateCustomerDto, EditCustomerDto } from "./dto";
+import { AuthReq } from "../auth/type/auth-req.type";
+import { HttpErr } from "../common/error";
 
 @Injectable()
 export class CustomerService {
@@ -22,29 +24,60 @@ export class CustomerService {
     private readonly accountService: AccountService,
   ) {}
 
-  async findAll(): Promise<Customer[] | null> {
+  async findAll(authUser: AuthReq["user"]): Promise<Customer[] | null> {
     try {
-      return await this.customerRepo.find();
+      if (authUser.accountType == "mas") {
+        return await this.customerRepo.find();
+      } else if (authUser.accountType == "ma") {
+        return await this.customerRepo.find({
+          relations: {
+            manager: true,
+          },
+          where: {
+            manager: {
+              id: authUser.userId,
+            },
+          },
+        });
+      }
+      throw new HttpException("Unauthorized", 401);
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
-  async findById(uuid: string): Promise<Customer | null> {
+  async findById(
+    uuid: string,
+    authUser?: AuthReq["user"],
+  ): Promise<Customer | null> {
     try {
+      if (authUser?.accountType == "ma") {
+        return await this.customerRepo.findOne({
+          relations: {
+            trips: true,
+            account: true,
+            manager: true,
+          },
+          where: {
+            id: uuid,
+            manager: {
+              id: authUser.userId,
+            },
+          },
+        });
+      }
       return await this.customerRepo.findOne({
-        where: {
-          id: uuid,
-        },
         relations: {
           trips: true,
           account: true,
+          manager: true,
+        },
+        where: {
+          id: uuid,
         },
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -60,8 +93,7 @@ export class CustomerService {
         note: createCustomerDto.note || "",
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -90,12 +122,7 @@ export class CustomerService {
       } catch (err: any) {
         Logger.log(err.message);
       }
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 
@@ -110,12 +137,7 @@ export class CustomerService {
         ...editCustomerDto,
       });
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 }

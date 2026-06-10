@@ -19,6 +19,7 @@ export class DriverController {
     });
   }
 
+  @Roles(Role.MANAGER, Role.MASTER)
   @Get(":id")
   async getDriverById(@Param("id") id: string, @Res() res: FastifyReply) {
     const driver: Driver | null = await this.driverService.findById(id);

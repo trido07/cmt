@@ -9,6 +9,8 @@ import { Role, Roles } from "../auth/decorators/roles.decorator";
 export class VehicleController {
   constructor(private vehicleService: VehicleService) {}
 
+  // TODO: add role for driver
+  @Roles(Role.MASTER, Role.MANAGER)
   @Get()
   async findAll(@Res() res: FastifyReply) {
     const data: Vehicle[] | null = await this.vehicleService.findAll();
@@ -18,7 +20,8 @@ export class VehicleController {
     });
   }
 
-  @Roles(Role.MASTER)
+  // TODO: add role for driver
+  @Roles(Role.MASTER, Role.MANAGER, Role.MANAGER)
   @Post()
   async createVehicle(
     @Body() body: CreateVehicleDto,

@@ -14,6 +14,7 @@ import { DriverService } from "../drivers";
 import { CustomerService } from "../customers";
 import { AuthService } from "../auth";
 import { ManagerService } from "../managers/manager.service";
+import { HttpErr } from "../common/error";
 
 @Injectable()
 export class AccountService {
@@ -33,8 +34,7 @@ export class AccountService {
     try {
       return await this.accountRepo.find();
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -46,8 +46,7 @@ export class AccountService {
         },
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -59,8 +58,7 @@ export class AccountService {
         },
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -79,12 +77,7 @@ export class AccountService {
       }
       return account;
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 
@@ -98,12 +91,7 @@ export class AccountService {
         data: { accessToken, expiresIn },
       };
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 
@@ -137,12 +125,7 @@ export class AccountService {
       }
       return account;
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 
@@ -152,8 +135,7 @@ export class AccountService {
         id: accountId,
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw err;
+      HttpErr(err);
     }
   }
 }

@@ -20,6 +20,7 @@ export class TripController {
     });
   }
 
+  // TODO: add roles
   @Get(":id")
   async getTripById(@Param("id") id: string, @Res() res: FastifyReply) {
     const trip: Trip | null = await this.tripService.findById(id);

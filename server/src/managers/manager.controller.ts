@@ -20,6 +20,7 @@ export class ManagerController {
     });
   }
 
+  @Roles(Role.MASTER)
   @Get(":id")
   async getManagerById(@Param("id") id: string, @Res() res: FastifyReply) {
     const manager: Manager | null = await this.managerService.findById(id);

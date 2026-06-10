@@ -5,6 +5,7 @@ import { Trip } from "./entities";
 import { BookTripDto } from "./dto";
 import { CustomerService } from "../customers";
 import { Role, Roles } from "../auth/decorators/roles.decorator";
+import { HttpErr } from "../common/error";
 
 @Injectable()
 export class TripService {
@@ -19,8 +20,7 @@ export class TripService {
     try {
       return await this.tripRepo.find();
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -37,12 +37,7 @@ export class TripService {
         },
       });
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 
@@ -69,12 +64,7 @@ export class TripService {
       });
       return newTrip;
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 }

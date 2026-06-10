@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Vehicle } from "./entities";
 import { CreateVehicleDto, EditVehicleDto } from "./dto";
+import { HttpErr } from "../common/error";
 
 @Injectable()
 export class VehicleService {
@@ -15,8 +16,7 @@ export class VehicleService {
     try {
       return await this.vehicleRepo.find();
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -31,8 +31,7 @@ export class VehicleService {
         },
       });
     } catch (err: any) {
-      Logger.log(err.message);
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -45,7 +44,7 @@ export class VehicleService {
         note: createVehicleDto.note,
       });
     } catch (err: any) {
-      throw new Error("Internal server error");
+      HttpErr(err);
     }
   }
 
@@ -60,12 +59,7 @@ export class VehicleService {
         ...editVehicleDto,
       });
     } catch (err: any) {
-      if (err instanceof HttpException) {
-        throw err;
-      } else {
-        Logger.log(err.message);
-        throw new Error("Internal server error");
-      }
+      HttpErr(err);
     }
   }
 }
