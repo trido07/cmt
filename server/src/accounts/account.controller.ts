@@ -44,7 +44,7 @@ export class AccountController {
   }
 
   @Roles(Role.MASTER)
-  @Post()
+  @Post("/create")
   async createNewAccount(
     @Body() body: CreateAccountDto,
     @Res() res: FastifyReply,
@@ -58,7 +58,7 @@ export class AccountController {
     });
   }
 
-  @Post("/signin")
+  @Post("/login")
   async signIn(@Body() body: SignInDto, @Res() res: FastifyReply) {
     const json = await this.accountService.signIn(body);
     res.send(json);
