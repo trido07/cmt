@@ -6,7 +6,7 @@ import {
   Logger,
   NotFoundException,
 } from "@nestjs/common";
-import { CreateDriverDto } from "./dto";
+import { CreateDriverDto, EditDriverDto } from "./dto";
 import { Repository } from "typeorm";
 import { Driver } from "./entities";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -86,6 +86,26 @@ export class DriverService {
       } catch (err: any) {
         Logger.log(err.message);
       }
+      if (err instanceof HttpException) {
+        throw err;
+      } else {
+        Logger.log(err.message);
+        throw new Error("Internal server error");
+      }
+    }
+  }
+
+  async editDriverById(id: string, editDriverDto: EditDriverDto) {
+    try {
+      const driver = await this.findById(id);
+      if (!driver) {
+        throw new HttpException("Driver not found", 404);
+      }
+      return await this.driverRepo.save({
+        ...driver,
+        ...editDriverDto,
+      });
+    } catch (err: any) {
       if (err instanceof HttpException) {
         throw err;
       } else {

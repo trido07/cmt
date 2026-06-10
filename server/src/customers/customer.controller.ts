@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Res } from "@nestjs/common";
 import { CustomerService } from "./customer.service";
-import { CreateCustomerDto } from "./dto";
+import { CreateCustomerDto, EditCustomerDto } from "./dto";
 import { Customer } from "./entities";
 import { FastifyReply } from "fastify";
 import { Role, Roles } from "../auth/decorators/roles.decorator";
@@ -35,6 +35,20 @@ export class CustomerController {
     @Res() res: FastifyReply,
   ) {
     const customer = await this.customerService.createCustomer(body);
+    res.send({
+      statusCode: 200,
+      data: customer,
+    });
+  }
+
+  @Roles(Role.MASTER)
+  @Put("/:id")
+  async editCustomer(
+    @Body() body: EditCustomerDto,
+    @Param("id") id: string,
+    @Res() res: FastifyReply,
+  ) {
+    const customer = await this.customerService.editCustomerById(id, body);
     res.send({
       statusCode: 200,
       data: customer,

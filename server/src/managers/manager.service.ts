@@ -12,7 +12,7 @@ import { Repository } from "typeorm";
 import { Customer } from "../customers/entities";
 import { AccountService } from "../accounts/account.service";
 import { AssignAccountDto } from "../accounts/dto";
-import { CreateManagerDto } from "./dto";
+import { CreateManagerDto, EditManagerDto } from "./dto";
 
 @Injectable()
 export class ManagerService {
@@ -86,6 +86,26 @@ export class ManagerService {
       } catch (err: any) {
         Logger.log(err.message);
       }
+      if (err instanceof HttpException) {
+        throw err;
+      } else {
+        Logger.log(err.message);
+        throw new Error("Internal server error");
+      }
+    }
+  }
+
+  async editManagerById(id: string, editManagerDto: EditManagerDto) {
+    try {
+      const manager = await this.findById(id);
+      if (!manager) {
+        throw new HttpException("Manager not found", 404);
+      }
+      return await this.managerRepo.save({
+        ...manager,
+        ...editManagerDto,
+      });
+    } catch (err: any) {
       if (err instanceof HttpException) {
         throw err;
       } else {

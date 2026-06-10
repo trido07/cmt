@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Res } from "@nestjs/common";
 import { FastifyReply } from "fastify";
 import { ManagerService } from "./manager.service";
 import { Manager } from "./entities";
 import { CreateManagerDto } from "./dto";
 import { Role, Roles } from "../auth/decorators/roles.decorator";
+import { EditManagerDto } from "./dto/edit-manager.dto";
 
 @Controller("/manager")
 export class ManagerController {
@@ -35,6 +36,20 @@ export class ManagerController {
     @Res() res: FastifyReply,
   ) {
     const manager = await this.managerService.createManager(body);
+    res.send({
+      statusCode: 200,
+      data: manager,
+    });
+  }
+
+  @Roles(Role.MASTER)
+  @Put("/:id")
+  async editManager(
+    @Body() body: EditManagerDto,
+    @Param("id") id: string,
+    @Res() res: FastifyReply,
+  ) {
+    const manager = await this.managerService.editManagerById(id, body);
     res.send({
       statusCode: 200,
       data: manager,

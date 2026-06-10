@@ -11,7 +11,7 @@ import { Customer } from "./entities";
 import { Repository } from "typeorm";
 import { AccountService } from "../accounts/account.service";
 import { AssignAccountDto } from "../accounts/dto";
-import { CreateCustomerDto } from "./dto";
+import { CreateCustomerDto, EditCustomerDto } from "./dto";
 
 @Injectable()
 export class CustomerService {
@@ -90,6 +90,26 @@ export class CustomerService {
       } catch (err: any) {
         Logger.log(err.message);
       }
+      if (err instanceof HttpException) {
+        throw err;
+      } else {
+        Logger.log(err.message);
+        throw new Error("Internal server error");
+      }
+    }
+  }
+
+  async editCustomerById(id: string, editCustomerDto: EditCustomerDto) {
+    try {
+      const manager = await this.findById(id);
+      if (!manager) {
+        throw new HttpException("Customer not found", 404);
+      }
+      return await this.customerRepo.save({
+        ...manager,
+        ...editCustomerDto,
+      });
+    } catch (err: any) {
       if (err instanceof HttpException) {
         throw err;
       } else {

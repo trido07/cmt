@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, Res } from "@nestjs/common";
-import { CreateDriverDto } from "./dto";
+import { Body, Controller, Get, Param, Post, Put, Res } from "@nestjs/common";
+import { CreateDriverDto, EditDriverDto } from "./dto";
 import { DriverService } from "./driver.service";
 import { FastifyReply } from "fastify";
 import { Driver } from "./entities";
@@ -32,6 +32,23 @@ export class DriverController {
   @Post()
   async createDriver(@Body() body: CreateDriverDto, @Res() res: FastifyReply) {
     const driver = await this.driverService.createDriver(body);
+    res.send({
+      statusCode: 200,
+      data: driver,
+    });
+  }
+
+  @Roles(Role.MASTER)
+  @Put("/:id")
+  async editDriverById(
+    @Param("id") id: string,
+    @Res() res: FastifyReply,
+    @Body() body: EditDriverDto,
+  ) {
+    const driver: Driver | null = await this.driverService.editDriverById(
+      id,
+      body,
+    );
     res.send({
       statusCode: 200,
       data: driver,

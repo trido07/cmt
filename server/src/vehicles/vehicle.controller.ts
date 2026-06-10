@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Res } from "@nestjs/common";
 import { VehicleService } from "./vehicle.service";
 import { Vehicle } from "./entities";
 import { FastifyReply } from "fastify";
-import { CreateVehicleDto } from "./dto";
+import { CreateVehicleDto, EditVehicleDto } from "./dto";
 import { Role, Roles } from "../auth/decorators/roles.decorator";
 
 @Controller("vehicle")
@@ -25,6 +25,20 @@ export class VehicleController {
     @Res() res: FastifyReply,
   ) {
     const vehicle: Vehicle | null = await this.vehicleService.create(body);
+    res.send({
+      statusCode: 200,
+      data: vehicle,
+    });
+  }
+
+  @Roles(Role.MASTER)
+  @Put("/:id")
+  async editVehicle(
+    @Body() body: EditVehicleDto,
+    @Param("id") id: string,
+    @Res() res: FastifyReply,
+  ) {
+    const vehicle = await this.vehicleService.editVehicleById(id, body);
     res.send({
       statusCode: 200,
       data: vehicle,
