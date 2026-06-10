@@ -4,8 +4,10 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from "typeorm";
 import { Account } from "../../accounts/entities";
+import { Customer } from "../../customers/entities";
 
 @Entity({ name: "manager" })
 export class Manager {
@@ -21,6 +23,9 @@ export class Manager {
 
   @Column({ type: "varchar", length: 11 })
   phone!: string;
+
+  @OneToMany(() => Customer, (customer) => customer.manager)
+  customers!: Customer[];
 
   @Column({ type: "varchar", length: 255, default: "" })
   note!: string;

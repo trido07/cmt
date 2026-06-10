@@ -5,9 +5,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
 } from "typeorm";
 import { Account } from "../../accounts/entities";
 import { Trip } from "../../trips/entities";
+import { Manager } from "../../managers/entities";
 
 @Entity({ name: "customer" })
 export class Customer {
@@ -29,6 +31,9 @@ export class Customer {
 
   @Column({ type: "varchar", length: 11 })
   contactPhone!: string;
+
+  @ManyToOne(() => Manager, (manager) => manager.customers)
+  manager!: Manager;
 
   @OneToMany(() => Trip, (trip) => trip.vehicle)
   trips!: Trip[];

@@ -9,7 +9,6 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Manager } from "./entities";
 import { Repository } from "typeorm";
-import { Customer } from "../customers/entities";
 import { AccountService } from "../accounts/account.service";
 import { AssignAccountDto } from "../accounts/dto";
 import { CreateManagerDto, EditManagerDto } from "./dto";
@@ -18,7 +17,7 @@ import { CreateManagerDto, EditManagerDto } from "./dto";
 export class ManagerService {
   constructor(
     @InjectRepository(Manager)
-    private readonly managerRepo: Repository<Customer>,
+    private readonly managerRepo: Repository<Manager>,
     @Inject(forwardRef(() => AccountService))
     private readonly accountService: AccountService,
   ) {}
@@ -40,6 +39,7 @@ export class ManagerService {
         },
         relations: {
           account: true,
+          customers: true,
         },
       });
     } catch (err: any) {
