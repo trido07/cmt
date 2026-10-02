@@ -20,8 +20,17 @@ export class VehicleController {
     });
   }
 
-  // TODO: add role for driver
-  @Roles(Role.MASTER, Role.MANAGER, Role.MANAGER)
+  @Roles(Role.MASTER, Role.MANAGER)
+  @Get(":id")
+  async getVehicleById(@Param("id") id: string, @Res() res: FastifyReply) {
+    const vehicle: Vehicle | null = await this.vehicleService.findById(id);
+    res.send({
+      statusCode: 200,
+      data: vehicle,
+    });
+  }
+
+  @Roles(Role.MASTER)
   @Post()
   async createVehicle(
     @Body() body: CreateVehicleDto,
